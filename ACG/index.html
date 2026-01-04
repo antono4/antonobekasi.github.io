@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYETAK ACG v6.0 - Full Open Source AI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & Babel CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030303;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .btn-primary {
+            background: #facc15;
+            color: #000000;
+            font-weight: 800;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(250, 204, 21, 0.3);
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            background: rgba(250, 204, 21, 0.05);
+            border-color: rgba(250, 204, 21, 0.2);
+        }
+        @keyframes flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-flow {
+            background: linear-gradient(90deg, #facc15, #fb923c, #facc15);
+            background-size: 200% auto;
+            animation: flow 3s linear infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #030303; }
+        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2a2a2a; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback } = React;
+
+        const Icon = ({ name, size = 24, className = "" }) => {
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name]);
+            return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
+        };
+
+        const STEPS = [
+            { id: 1, label: 'Ide', icon: 'zap' },
+            { id: 2, label: 'Judul', icon: 'edit-3' },
+            { id: 3, label: 'Hook', icon: 'target' },
+            { id: 4, label: 'Naskah', icon: 'file-text' },
+            { id: 5, label: 'Visual', icon: 'aperture' },
+            { id: 6, label: 'Final', icon: 'check-circle' }
+        ];
+
+        const App = () => {
+            const [currentStep, setCurrentStep] = useState(1);
+            const [loading, setLoading] = useState(false);
+            const [loadingMsg, setLoadingMsg] = useState("");
+            const [error, setError] = useState(null);
+            
+            const [data, setData] = useState({
+                topic: "",
+                titles: [],
+                selectedTitle: "",
+                hooks: [],
+                selectedHook: "",
+                script: "",
+                visual: { imageUrl: "", prompt: "", headline: "" },
+                caption: ""
+            });
+
+            // Improved Open Source AI Engine with Retry Logic
+            const askAI = async (prompt, systemPrompt, retryCount = 0) => {
+                const url = `https://text.pollinations.ai/`;
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            messages: [
+                                { role: 'system', content: systemPrompt + " HARUS mengembalikan data dalam format JSON murni. Jangan gunakan markdown backticks (```json). Jangan ada teks tambahan di luar JSON." },
+                                { role: 'user', content: prompt }
+                            ],
+                            model: 'openai',
+                            seed: Math.floor(Math.random() * 1000000)
+                        })
+                    });
+
+                    if (!response.ok) throw new Error("Server busy");
+                    const result = await response.text();
+                    
+                    // Stronger JSON Cleaning
+                    const jsonMatch = result.match(/\{[\s\S]*\}/);
+                    const cleanJson = jsonMatch ? jsonMatch[0] : result.trim();
+                    
+                    try {
+                        return JSON.parse(cleanJson);
+                    } catch (e) {
+                        // If it's not JSON, return as string if that's expected (like for scripts)
+                        if (systemPrompt.includes("JSON")) throw new Error("Invalid format");
+                        return { script: result };
+                    }
+                } catch (err) {
+                    if (retryCount < 2) {
+                        console.log(`Retrying... (${retryCount + 1})`);
+                        return await askAI(prompt, systemPrompt, retryCount + 1);
+                    }
+                    console.error("AI Error:", err);
+                    throw new Error("Koneksi AI sedang padat. Coba tekan tombol lagi.");
+                }
+            };
+
+            const handleStartBrainstorm = async () => {
+                if (!data.topic.trim()) return setError("Tolong tuliskan topik atau ide dasar Anda.");
+                setLoading(true);
+                setLoadingMsg("AI sedang meramu ide konten viral...");
+                setError(null);
+                try {
+                    const system = `Anda adalah ahli strategi konten TikTok/Shorts. Buat 5 opsi judul klikbait dalam Bahasa Indonesia. Format JSON: { "options": [{ "title": "string", "viral_score": number }] }`;
+                    const res = await askAI(`Topik: ${data.topic}`, system);
+                    if (!res.options) throw new Error("Gagal memproses data.");
+                    setData(prev => ({ ...prev, titles: res.options }));
+                    setCurrentStep(2);
+                } catch (e) { setError(e.message); } finally { setLoading(false); }
+            };
+
+            const handleTitleSelection = async (title) => {
+                setLoading(true);
+                setLoadingMsg("Menyusun hook pembuka psikologis...");
+                setData(prev => ({ ...prev, selectedTitle: title }));
+                try {
+                    const system = `Buat 3 opsi hook penahan penonton. Bahasa Indonesia. Format JSON: { "hooks": [{ "text": "string", "category": "Curiosity/Fear/Greed" }] }`;
+                    const res = await askAI(`Judul Konten: ${title}`, system);
+                    setData(prev => ({ ...prev, hooks: res.hooks }));
+                    setCurrentStep(3);
+                } catch (e) { setError(e.message); } finally { setLoading(false); }
+            };
+
+            const handleHookSelection = async (hook) => {
+                setLoading(true);
+                setLoadingMsg("Menulis naskah lengkap (AI Master Writer)...");
+                setData(prev => ({ ...prev, selectedHook: hook }));
+                try {
+                    const system = `Tulis naskah video pendek dinamis dalam Bahasa Indonesia. Format JSON: { "script": "isi naskah" }`;
+                    const res = await askAI(`Judul: ${data.selectedTitle}. Hook: ${hook}.`, system);
+                    setData(prev => ({ ...prev, script: res.script }));
+                    setCurrentStep(4);
+                } catch (e) { setError(e.message); } finally { setLoading(false); }
+            };
+
+            const handleVisualGeneration = async () => {
+                setLoading(true);
+                setLoadingMsg("AI sedang melukis thumbnail (Flux Engine)...");
+                try {
+                    const system = `Rancang konsep visual thumbnail. Format JSON: { "image_prompt": "detailed english prompt", "text_overlay": "Short viral text" }`;
+                    const res = await askAI(`Berdasarkan naskah: ${data.script.substring(0, 300)}`, system);
+                    
+                    const seed = Math.floor(Math.random() * 1000000);
+                    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(res.image_prompt)}?width=1280&height=720&seed=${seed}&model=flux&nologo=true`;
+                    
+                    setData(prev => ({
+                        ...prev, 
+                        visual: { prompt: res.image_prompt, imageUrl: imageUrl, headline: res.text_overlay }
+                    }));
+                    setCurrentStep(5);
+                } catch (e) { setError(e.message); } finally { setLoading(false); }
+            };
+
+            const handleFinalizing = async () => {
+                setLoading(true);
+                setLoadingMsg("Menyiapkan caption dan metadata...");
+                try {
+                    const system = `Buat 1 caption viral TikTok/IG. Format JSON: { "caption": "string" }`;
+                    const res = await askAI(`Judul: ${data.selectedTitle}`, system);
+                    setData(prev => ({ ...prev, caption: res.caption }));
+                    setCurrentStep(6);
+                } catch (e) { setError(e.message); } finally { setLoading(false); }
+            };
+
+            return (
+                <div className="min-h-screen bg-[#030303]">
+                    <nav className="glass sticky top-0 z-50 border-b border-white/5 px-6 py-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-yellow-400 rounded-2xl flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-500">
+                                <Icon name="zap" size={24} className="text-black fill-current" />
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-black tracking-tighter uppercase leading-none">NYETAK <span className="text-yellow-400">ACG</span></h1>
+                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Open Source OS v6.0</span>
+                            </div>
+                        </div>
+                        <div className="hidden md:flex gap-1">
+                            {STEPS.map(s => (
+                                <div key={s.id} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase border transition-all duration-300 ${currentStep === s.id ? 'border-yellow-400/50 text-yellow-400 bg-yellow-400/5' : 'border-transparent text-zinc-600'}`}>
+                                    {s.label}
+                                </div>
+                            ))}
+                        </div>
+                    </nav>
+
+                    <main className="max-w-4xl mx-auto px-6 py-12">
+                        {error && (
+                            <div className="mb-8 p-5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-3xl flex items-center justify-between animate-in slide-in-from-top-4">
+                                <div className="flex items-center gap-3">
+                                    <Icon name="alert-triangle" size={18} />
+                                    <p className="text-sm font-bold tracking-tight">{error}</p>
+                                </div>
+                                <button onClick={() => setError(null)} className="hover:rotate-90 transition-transform"><Icon name="x" size={18}/></button>
+                            </div>
+                        )}
+
+                        {currentStep === 1 && (
+                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                                <div className="space-y-4">
+                                    <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.8] uppercase">
+                                        POWERED BY <br/><span className="animate-flow">OPEN SOURCE.</span>
+                                    </h2>
+                                    <p className="text-zinc-500 text-lg font-medium max-w-xl">
+                                        Selamat datang di masa depan pembuatan konten. Gunakan kecerdasan kolektif AI terbuka untuk meriset, menulis, dan melukis konten Anda secara instan.
+                                    </p>
+                                </div>
+
+                                <div className="glass p-10 rounded-[3rem] space-y-8 border-white/5">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 text-zinc-600 ml-1">
+                                            <Icon name="terminal" size={14} />
+                                            <label className="text-[10px] font-black uppercase tracking-[0.2em]">Input Prompt Ide</label>
+                                        </div>
+                                        <textarea 
+                                            value={data.topic}
+                                            onChange={e => setData({...data, topic: e.target.value})}
+                                            placeholder="Tulis topik dasar... misal: Keajaiban Borobudur yang belum diketahui dunia"
+                                            className="w-full bg-transparent border-b-2 border-white/10 p-4 focus:border-yellow-400 outline-none text-2xl font-bold placeholder:text-zinc-800 transition-all resize-none h-32"
+                                        />
+                                    </div>
+                                    <button onClick={handleStartBrainstorm} className="w-full btn-primary py-8 rounded-[2.5rem] text-2xl flex items-center justify-center gap-4 group">
+                                        MULAI PRODUKSI AI <Icon name="arrow-right" size={24} className="group-hover:translate-x-2 transition-transform"/>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {currentStep === 2 && (
+                            <div className="space-y-8 animate-in fade-in">
+                                <h2 className="text-3xl font-black italic uppercase tracking-tighter">Pilih Judul <span className="text-yellow-400">Viral</span></h2>
+                                <div className="grid gap-4">
+                                    {data.titles.map((t, i) => (
+                                        <button key={i} onClick={() => handleTitleSelection(t.title)} className="glass p-8 rounded-[2rem] text-left card-hover border-white/5 flex justify-between items-center group">
+                                            <p className="text-xl font-extrabold leading-tight group-hover:text-yellow-400">{t.title}</p>
+                                            <div className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-black text-zinc-500 uppercase tracking-widest">{t.viral_score}% Virality</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {currentStep === 3 && (
+                            <div className="space-y-8 animate-in fade-in">
+                                <h2 className="text-3xl font-black italic uppercase tracking-tighter">Tentukan <span className="text-yellow-400">Hook</span> Utama</h2>
+                                <div className="grid gap-4">
+                                    {data.hooks.map((h, i) => (
+                                        <button key={i} onClick={() => handleHookSelection(h.text)} className="glass p-8 rounded-[2rem] text-left card-hover border-white/5 space-y-3">
+                                            <span className="text-[10px] bg-yellow-400/10 text-yellow-400 px-3 py-1 rounded-full font-black uppercase tracking-widest">{h.category} Strategy</span>
+                                            <p className="text-2xl font-black italic leading-tight">"{h.text}"</p>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {currentStep === 4 && (
+                            <div className="space-y-8 animate-in fade-in">
+                                <h2 className="text-3xl font-black italic uppercase tracking-tighter">Naskah <span className="text-yellow-400">Storytelling</span></h2>
+                                <div className="glass p-10 rounded-[2.5rem] h-[500px] overflow-y-auto font-mono text-sm leading-relaxed text-zinc-400 whitespace-pre-wrap border-white/10 custom-scrollbar">
+                                    {data.script}
+                                </div>
+                                <button onClick={handleVisualGeneration} className="w-full btn-primary py-7 rounded-[2rem] text-xl flex items-center justify-center gap-3">
+                                    GENERATE VISUAL AI <Icon name="aperture" size={24}/>
+                                </button>
+                            </div>
+                        )}
+
+                        {currentStep === 5 && (
+                            <div className="space-y-12 animate-in zoom-in-95 duration-500">
+                                <div className="text-center space-y-4">
+                                    <h2 className="text-4xl font-black italic uppercase text-yellow-400 tracking-tighter">HASIL KARYA VISUAL</h2>
+                                    <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest">Generated by Flux Engine Open Model</p>
+                                </div>
+
+                                <div className="relative mx-auto max-w-2xl overflow-hidden rounded-[3rem] border-4 border-white/5 shadow-[0_0_100px_rgba(250,204,21,0.1)] aspect-video bg-zinc-950">
+                                    <img src={data.visual.imageUrl} className="w-full h-full object-cover" alt="AI Generated Visual" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent p-12 flex flex-col justify-end">
+                                        <h3 className="text-4xl md:text-5xl font-black text-yellow-400 italic leading-[0.9] drop-shadow-2xl uppercase">{data.visual.headline}</h3>
+                                    </div>
+                                    <div className="absolute top-6 right-6 px-4 py-2 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest">
+                                        OS-RENDER: 1280x720
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
+                                    <button onClick={handleVisualGeneration} className="flex-1 glass py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white/5">Re-Roll Visual</button>
+                                    <button onClick={handleFinalizing} className="flex-1 btn-primary py-6 rounded-2xl uppercase font-black text-sm">Lanjutkan Selesai</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {currentStep === 6 && (
+                            <div className="space-y-12 animate-in fade-in duration-700">
+                                <div className="text-center py-10 space-y-6">
+                                    <div className="w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center mx-auto shadow-[0_0_60px_rgba(250,204,21,0.4)] rotate-12">
+                                        <Icon name="award" size={48} className="text-black" />
+                                    </div>
+                                    <h2 className="text-5xl font-black italic tracking-tighter uppercase">KONTEN <span className="text-yellow-400">SIAP EDAR!</span></h2>
+                                </div>
+                                
+                                <div className="glass p-10 rounded-[3rem] space-y-6">
+                                    <div className="flex items-center gap-3 text-yellow-400">
+                                        <Icon name="message-square" size={20} />
+                                        <h4 className="font-black uppercase tracking-[0.2em] text-xs">Recommended Caption</h4>
+                                    </div>
+                                    <p className="text-lg font-medium text-zinc-300 leading-relaxed italic">"{data.caption}"</p>
+                                    <div className="pt-6 border-t border-white/5 flex gap-4">
+                                        <button onClick={() => window.location.reload()} className="flex-1 bg-white/5 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-colors">Ulangi Dari Awal</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    {loading && (
+                        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center">
+                            <div className="relative w-24 h-24 mb-10">
+                                <div className="absolute inset-0 border-4 border-yellow-400/10 rounded-full"></div>
+                                <div className="absolute inset-0 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                                <div className="absolute inset-4 bg-yellow-400/5 rounded-full animate-pulse flex items-center justify-center">
+                                    <Icon name="cpu" size={24} className="text-yellow-400/40" />
+                                </div>
+                            </div>
+                            <h3 className="text-2xl font-black italic text-yellow-400 uppercase tracking-tighter animate-pulse mb-2">{loadingMsg}</h3>
+                            <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-[0.5em]">Synchronizing Open-Source Nodes</p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
