@@ -6,41 +6,42 @@
     <title>ACG v6.0 - Auto Content Generator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00f0ff;
-            --secondary: #ff00aa;
-            --accent: #a855f7;
-            --dark: #0a0a0f;
-            --darker: #050508;
-            --light: #f0f0f5;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --success: #10b981;
-            --error: #ef4444;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --bg-card-hover: #222233;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-tertiary: #ec4899;
+            --accent-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: var(--darker);
-            color: var(--light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        /* Background */
-        .bg-animation {
+        /* Animated Background */
+        .bg-wrapper {
             position: fixed;
             top: 0;
             left: 0;
@@ -50,51 +51,64 @@
             overflow: hidden;
         }
 
-        .bg-animation::before {
-            content: '';
+        .bg-gradient {
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+            width: 100%;
+            height: 100%;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(0, 240, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 0, 170, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(168, 85, 247, 0.1) 0%, transparent 40%);
-            animation: bgPulse 15s ease-in-out infinite;
+                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99, 102, 241, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.12), transparent),
+                radial-gradient(ellipse 50% 30% at 50% 80%, rgba(236, 72, 153, 0.1), transparent);
+            animation: bgMove 20s ease-in-out infinite;
         }
 
-        .grid-overlay {
+        .bg-grid {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
         }
 
-        @keyframes bgPulse {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-2%, 2%); }
+        @keyframes bgMove {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-2%, 2%) scale(1.02); }
+            66% { transform: translate(2%, -1%) scale(0.98); }
         }
 
-        /* Navigation */
-        nav {
+        /* Noise Overlay */
+        .noise {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            padding: 1rem 5%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 1000;
-            background: rgba(5, 5, 8, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
         }
 
         .logo {
@@ -104,40 +118,44 @@
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Syne', sans-serif;
             font-weight: 800;
-            font-size: 0.9rem;
-            color: var(--dark);
+            font-size: 1rem;
+            color: white;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
         }
 
-        .logo-text {
-            font-family: 'Syne', sans-serif;
+        .logo-text h1 {
+            font-size: 1.25rem;
             font-weight: 700;
-            font-size: 1.2rem;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .ai-badge {
+        .logo-text span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .header-badge {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.4rem 1rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 50px;
             font-size: 0.8rem;
         }
 
-        .ai-badge .dot {
+        .header-badge .dot {
             width: 8px;
             height: 8px;
             background: var(--success);
@@ -146,148 +164,240 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
         }
 
         /* Main Container */
-        .container {
-            max-width: 1200px;
+        .main {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 7rem 2rem 4rem;
+            padding: 2rem;
         }
 
-        /* Header */
-        .app-header {
+        /* Hero Section */
+        .hero {
             text-align: center;
-            margin-bottom: 3rem;
+            padding: 3rem 0 2rem;
         }
 
-        .app-header h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: 2.5rem;
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
             font-weight: 800;
-            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            margin-bottom: 1rem;
         }
 
-        .app-header h1 span {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+        .hero h1 .gradient {
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .app-header p {
-            color: rgba(240, 240, 245, 0.6);
-            font-size: 1rem;
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         /* Steps Navigation */
-        .steps-nav {
+        .steps-container {
+            margin: 2rem 0 3rem;
+        }
+
+        .steps-wrapper {
             display: flex;
-            justify-content: center;
             gap: 0.5rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
+            overflow-x: auto;
+            padding: 0.5rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .steps-wrapper::-webkit-scrollbar {
+            display: none;
         }
 
         .step-btn {
-            padding: 0.6rem 1.25rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 50px;
-            color: var(--light);
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.85rem;
+            flex-shrink: 0;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .step-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .step-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: var(--dark);
-            border-color: transparent;
-        }
-
-        .step-btn.completed {
-            background: var(--success);
-            color: white;
-            border-color: var(--success);
-        }
-
-        /* Input Section */
-        .input-section {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .input-section label {
-            display: block;
-            font-family: 'Syne', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        .input-wrapper {
-            display: flex;
-            gap: 1rem;
-        }
-
-        textarea {
-            flex: 1;
-            padding: 1rem 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            color: var(--light);
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
-            resize: vertical;
-            min-height: 100px;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        textarea::placeholder {
-            color: rgba(240, 240, 245, 0.4);
-        }
-
-        textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-        }
-
-        /* Buttons */
-        .btn-primary {
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border: none;
-            border-radius: 12px;
-            color: var(--dark);
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 0.5rem;
             white-space: nowrap;
         }
 
+        .step-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: var(--text-primary);
+        }
+
+        .step-btn.active {
+            background: var(--accent-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .step-btn.completed {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--success);
+        }
+
+        .step-btn .step-number {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .step-btn.active .step-number {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        .card-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-title .icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Input */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 120px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0 40px rgba(0, 240, 255, 0.4);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
         }
 
         .btn-primary:disabled {
@@ -297,78 +407,100 @@
         }
 
         .btn-secondary {
-            padding: 0.8rem 1.5rem;
             background: transparent;
-            border: 2px solid var(--glass-border);
-            border-radius: 12px;
-            color: var(--light);
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
         }
 
         .btn-secondary:hover {
-            border-color: var(--primary);
-            color: var(--primary);
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
         }
 
-        /* Output Section */
-        .output-section {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            min-height: 300px;
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
         }
 
-        .output-header {
+        .btn-icon:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-group {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
+            gap: 0.75rem;
         }
 
-        .output-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary);
+        /* Output */
+        .output-wrapper {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
         }
 
         .output-content {
-            background: rgba(0, 0, 0, 0.3);
+            flex: 1;
+            background: var(--bg-secondary);
             border-radius: 12px;
             padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
             line-height: 1.8;
             white-space: pre-wrap;
-            font-size: 0.95rem;
+            word-break: break-word;
+        }
+
+        .output-content.placeholder {
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         .output-content.error {
             color: var(--error);
         }
 
-        /* Loading State */
-        .loading {
+        .output-footer {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .output-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Loading */
+        .loading-wrapper {
             display: none;
             align-items: center;
             gap: 1rem;
             padding: 1rem;
-            background: rgba(0, 240, 255, 0.1);
+            background: rgba(99, 102, 241, 0.1);
             border-radius: 12px;
             margin-bottom: 1rem;
         }
 
-        .loading.active {
+        .loading-wrapper.active {
             display: flex;
         }
 
         .spinner {
             width: 24px;
             height: 24px;
-            border: 3px solid var(--glass-border);
-            border-top-color: var(--primary);
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -377,7 +509,43 @@
             to { transform: rotate(360deg); }
         }
 
-        /* API Key Modal */
+        /* Suggestions */
+        .suggestions {
+            margin-top: 1rem;
+        }
+
+        .suggestions-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .suggestion-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .suggestion-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: var(--accent-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-tag:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -386,6 +554,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
             z-index: 2000;
             align-items: center;
             justify-content: center;
@@ -396,237 +565,305 @@
         }
 
         .modal {
-            background: var(--dark);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 2rem;
             max-width: 500px;
             width: 90%;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .modal h3 {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .modal p {
-            color: rgba(240, 240, 245, 0.7);
-            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
             font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal p a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .modal p a:hover {
+            text-decoration: underline;
         }
 
         .modal input {
             width: 100%;
             padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            color: var(--light);
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
             margin-bottom: 1rem;
             outline: none;
         }
 
         .modal input:focus {
-            border-color: var(--primary);
+            border-color: var(--accent-primary);
         }
 
         .modal-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             justify-content: flex-end;
         }
 
-        /* Copy Button */
-        .copy-btn {
-            padding: 0.5rem 1rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            color: var(--light);
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .copy-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .copy-btn.copied {
-            background: var(--success);
-            border-color: var(--success);
-            color: white;
-        }
-
-        /* Suggestions */
-        .suggestions {
-            margin-top: 1rem;
-        }
-
-        .suggestions-title {
-            font-size: 0.85rem;
-            color: rgba(240, 240, 245, 0.5);
-            margin-bottom: 0.5rem;
-        }
-
-        .suggestion-tags {
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.9rem;
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 3000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .suggestion-tag {
-            padding: 0.4rem 0.8rem;
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 50px;
-            font-size: 0.8rem;
-            color: var(--primary);
-            cursor: pointer;
-            transition: all 0.3s;
+        .notification.success {
+            border-color: rgba(16, 185, 129, 0.3);
         }
 
-        .suggestion-tag:hover {
-            background: rgba(0, 240, 255, 0.2);
+        .notification.error {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
         }
 
         /* Footer */
-        footer {
+        .footer {
             text-align: center;
-            padding: 2rem;
-            color: rgba(240, 240, 245, 0.5);
+            padding: 3rem 2rem;
+            color: var(--text-muted);
             font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .input-wrapper {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero {
+                padding: 2rem 0 1rem;
+            }
+
+            .step-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .btn-group {
                 flex-direction: column;
             }
-            
-            .btn-primary {
+
+            .btn {
                 width: 100%;
-                justify-content: center;
-            }
-            
-            .steps-nav {
-                gap: 0.3rem;
-            }
-            
-            .step-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
     <!-- Background -->
-    <div class="bg-animation">
-        <div class="grid-overlay"></div>
+    <div class="bg-wrapper">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
     </div>
+    <div class="noise"></div>
 
-    <!-- Navigation -->
-    <nav>
-        <div class="logo">
-            <div class="logo-icon">AI</div>
-            <span class="logo-text">ACG v6.0</span>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">AI</div>
+                <div class="logo-text">
+                    <h1>ACG v6.0</h1>
+                    <span>Auto Content Generator</span>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="dot"></span>
+                <span>Cohere Command R+</span>
+            </div>
         </div>
-        <div class="ai-badge">
-            <span class="dot"></span>
-            Cohere Command R+
-        </div>
-    </nav>
+    </header>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Header -->
-        <div class="app-header">
-            <h1><span>Auto Content Generator</span> Powered by AI</h1>
-            <p>Transformasikan ide menjadi konten profesional dalam hitungan menit</p>
-        </div>
+    <!-- Main -->
+    <main class="main">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-badge">
+                ✨ v6.0 Telah Rilis
+            </div>
+            <h1>
+                <span class="gradient">Auto Content Generator</span><br>
+                Powered by AI
+            </h1>
+            <p>Transformasikan ide menjadi konten profesional dalam hitungan menit dengan kekuatan AI kolektif terbuka.</p>
+        </section>
 
         <!-- Steps Navigation -->
-        <div class="steps-nav">
-            <button class="step-btn active" data-step="ide">💡 Ide</button>
-            <button class="step-btn" data-step="judul">📝 Judul</button>
-            <button class="step-btn" data-step="hook">🎣 Hook</button>
-            <button class="step-btn" data-step="naskah">📄 Naskah</button>
-            <button class="step-btn" data-step="visual">🎬 Visual</button>
-            <button class="step-btn" data-step="final">✨ Final</button>
-        </div>
-
-        <!-- Input Section -->
-        <div class="input-section">
-            <label id="step-label">💡 Masukkan Topik Ide</label>
-            <div class="input-wrapper">
-                <textarea id="prompt-input" placeholder="Tulis topik dasar... 
-Contoh: Keajaiban Borobudur yang belum diketahui dunia"></textarea>
-                <button class="btn-primary" id="generate-btn" onclick="generateContent()">
-                    <span class="btn-text">🚀 Mulai Produksi AI</span>
-                    <span class="btn-loading" style="display:none;">⏳ Loading...</span>
+        <div class="steps-container">
+            <div class="steps-wrapper">
+                <button class="step-btn active" data-step="ide">
+                    <span class="step-number">1</span>
+                    💡 Ide
+                </button>
+                <button class="step-btn" data-step="judul">
+                    <span class="step-number">2</span>
+                    📝 Judul
+                </button>
+                <button class="step-btn" data-step="hook">
+                    <span class="step-number">3</span>
+                    🎣 Hook
+                </button>
+                <button class="step-btn" data-step="naskah">
+                    <span class="step-number">4</span>
+                    📄 Naskah
+                </button>
+                <button class="step-btn" data-step="visual">
+                    <span class="step-number">5</span>
+                    🎬 Visual
+                </button>
+                <button class="step-btn" data-step="final">
+                    <span class="step-number">6</span>
+                    ✨ Final
                 </button>
             </div>
-            <div class="suggestions" id="suggestions">
-                <div class="suggestions-title">💡 Topic suggestions:</div>
-                <div class="suggestion-tags">
-                    <span class="suggestion-tag" onclick="setPrompt(this.textContent)">Sejarah Candi Borobudur</span>
-                    <span class="suggestion-tag" onclick="setPrompt(this.textContent)">Misteri Piramida Mesir</span>
-                    <span class="suggestion-tag" onclick="setPrompt(this.textContent)">Teknologi AI 2025</span>
-                    <span class="suggestion-tag" onclick="setPrompt(this.textContent)">Tips Produktivitas</span>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Input Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="icon" id="step-icon">💡</span>
+                        <span id="step-label">Input Ide Konten</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <textarea id="prompt-input" placeholder="Tulis topik dasar...
+Contoh: Keajaiban Borobudur yang belum diketahui dunia"></textarea>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" id="generate-btn" onclick="generateContent()">
+                                <span class="btn-text">🚀 Mulai Produksi AI</span>
+                                <span class="btn-loading" style="display:none;">⏳ Loading...</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="suggestions">
+                        <div class="suggestions-title">
+                            💡 Topic suggestions:
+                        </div>
+                        <div class="suggestion-list">
+                            <span class="suggestion-tag" onclick="setPrompt(this.textContent)">Sejarah Candi Borobudur</span>
+                            <span class="suggestion-tag" onclick="setPrompt(this.textContent)">Misteri Piramida Mesir</span>
+                            <span class="suggestion-tag" onclick="setPrompt(this.textContent)">Teknologi AI 2025</span>
+                            <span class="suggestion-tag" onclick="setPrompt(this.textContent)">Tips Produktivitas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="icon">📤</span>
+                        <span>Output AI</span>
+                    </div>
+                    <button class="btn btn-icon" onclick="copyOutput()" title="Copy">
+                        📋
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="output-wrapper">
+                        <!-- Loading -->
+                        <div class="loading-wrapper" id="loading">
+                            <div class="spinner"></div>
+                            <span>AI sedang menghasilkan konten...</span>
+                        </div>
+                        
+                        <!-- Output Content -->
+                        <div class="output-content placeholder" id="output-content">
+                            Hasil akan muncul di sini setelah Anda memulai produksi AI...
+                        </div>
+                        
+                        <div class="output-footer">
+                            <span class="output-meta" id="output-meta"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- Loading -->
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <span>AI sedang menghasilkan konten...</span>
-        </div>
-
-        <!-- Output Section -->
-        <div class="output-section">
-            <div class="output-header">
-                <span class="output-title" id="output-title">Hasil AI</span>
-                <button class="copy-btn" id="copy-btn" onclick="copyOutput()">📋 Copy</button>
-            </div>
-            <div class="output-content" id="output-content">
-                Hasil akan muncul di sini setelah Anda memulai produksi AI...
-            </div>
-        </div>
-    </div>
+    <!-- Footer -->
+    <footer class="footer">
+        © 2025 ACG v6.0 - Powered by <a href="https://cohere.com" target="_blank">Cohere</a> Command R+
+    </footer>
 
     <!-- API Key Modal -->
     <div class="modal-overlay" id="api-modal">
         <div class="modal">
             <h3>🔑 Masukkan Cohere API Key</h3>
-            <p>Dapatkan API key gratis di <a href="https://dashboard.cohere.com/api-keys" target="_blank" style="color: var(--primary);">dashboard.cohere.com</a></p>
+            <p>Dapatkan API key gratis di <a href="https://dashboard.cohere.com/api-keys" target="_blank">dashboard.cohere.com</a></p>
             <input type="password" id="api-key-input" placeholder="sk_...">
             <div class="modal-buttons">
-                <button class="btn-secondary" onclick="closeModal()">Batal</button>
-                <button class="btn-primary" onclick="saveApiKey()">Simpan</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                <button class="btn btn-primary" onclick="saveApiKey()">Simpan</button>
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer>
-        © 2025 ACG v6.0 - Powered by Cohere Command R+ | AI Content Generator
-    </footer>
 
     <script>
         // ==================== CONFIGURATION ====================
         const COHERE_API_URL = 'https://api.cohere.ai/v1/chat';
         
-        // Step configurations
         const STEP_CONFIG = {
             ide: {
-                label: '💡 Masukkan Topik Ide',
+                icon: '💡',
+                label: 'Input Ide Konten',
                 placeholder: 'Tulis topik dasar...\nContoh: Keajaiban Borobudur yang belum diketahui dunia',
                 prompt: (input) => `Buatkan 5 ide konten video YouTube yang menarik berdasarkan topik: "${input}". 
 Format jawaban dengan:
@@ -639,7 +876,8 @@ Format jawaban dengan:
 Setiap ide harus menarik, unik, dan memiliki potensi viral.`
             },
             judul: {
-                label: '📝 Masukkan Topik untuk Judul',
+                icon: '📝',
+                label: 'Input Judul Konten',
                 placeholder: 'Tulis topik atau ide yang sudah dapat...',
                 prompt: (input) => `Dari topik "${input}", buatkan 10 judul video yang:
 1. Menarik perhatian (clickable)
@@ -653,7 +891,8 @@ Format:
 10. [Judul 10]`
             },
             hook: {
-                label: '🎣 Masukkan Judul untuk Hook',
+                icon: '🎣',
+                label: 'Input Hook Konten',
                 placeholder: 'Tulis judul video...',
                 prompt: (input) => `Untuk judul video "${input}", buatkan 5 hook berbeda yang:
 1. Bikin penonton berhenti scroll
@@ -670,7 +909,8 @@ HOOK 2:
 dst...`
             },
             naskah: {
-                label: '📄 Masukkan Topik untuk Naskah',
+                icon: '📄',
+                label: 'Input Naskah Konten',
                 placeholder: 'Tulis judul atau topik naskah...',
                 prompt: (input) => `Buatkan naskah video lengkap untuk judul: "${input}"
 
@@ -682,7 +922,8 @@ NASKAH:
 [Ketik naskah lengkap di sini dengan timestamp jika perlu]`
             },
             visual: {
-                label: '🎬 Masukkan Deskripsi untuk Visual',
+                icon: '🎬',
+                label: 'Input Visual Storyboard',
                 placeholder: 'Tulis topik atau naskah...',
                 prompt: (input) => `Buatkan storyboard visual untuk video: "${input}"
 
@@ -698,7 +939,8 @@ Untuk setiap scene, jelaskan:
 - Audio/music yang cocok`
             },
             final: {
-                label: '✨ Hasil Akhir Lengkap',
+                icon: '✨',
+                label: 'Input Paket Lengkap',
                 placeholder: 'Masukkan topik untuk semua kombinasi...',
                 prompt: (input) => `Buatkan paket konten lengkap untuk topik: "${input}"
 
@@ -719,12 +961,10 @@ Format rapi dan profesional.`
 
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
-            // Check API key
             if (!apiKey) {
                 setTimeout(() => showModal(), 500);
             }
             
-            // Setup step buttons
             document.querySelectorAll('.step-btn').forEach(btn => {
                 btn.addEventListener('click', () => switchStep(btn.dataset.step));
             });
@@ -745,7 +985,7 @@ Format rapi dan profesional.`
                 apiKey = input.value.trim();
                 localStorage.setItem('cohere_api_key', apiKey);
                 closeModal();
-                showNotification('API Key tersimpan!', 'success');
+                showNotification('✅ API Key tersimpan!', 'success');
             }
         }
 
@@ -755,8 +995,8 @@ Format rapi dan profesional.`
 
         function switchStep(step) {
             currentStep = step;
+            const config = STEP_CONFIG[step];
             
-            // Update active button
             document.querySelectorAll('.step-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.dataset.step === step) {
@@ -764,20 +1004,20 @@ Format rapi dan profesional.`
                 }
             });
             
-            // Update label and placeholder
-            const config = STEP_CONFIG[step];
+            document.getElementById('step-icon').textContent = config.icon;
             document.getElementById('step-label').textContent = config.label;
             document.getElementById('prompt-input').placeholder = config.placeholder;
             
-            // Clear output
             document.getElementById('output-content').textContent = 'Hasil akan muncul di sini...';
+            document.getElementById('output-content').classList.remove('error');
+            document.getElementById('output-content').classList.add('placeholder');
         }
 
         async function generateContent() {
             const input = document.getElementById('prompt-input').value.trim();
             
             if (!input) {
-                showNotification('Masukkan topik terlebih dahulu!', 'error');
+                showNotification('⚠️ Masukkan topik terlebih dahulu!', 'error');
                 return;
             }
             
@@ -789,7 +1029,6 @@ Format rapi dan profesional.`
             const config = STEP_CONFIG[currentStep];
             const prompt = config.prompt(input);
             
-            // Show loading
             const loading = document.getElementById('loading');
             const btn = document.getElementById('generate-btn');
             const btnText = btn.querySelector('.btn-text');
@@ -799,6 +1038,10 @@ Format rapi dan profesional.`
             btn.disabled = true;
             btnText.style.display = 'none';
             btnLoading.style.display = 'inline';
+            
+            const outputContent = document.getElementById('output-content');
+            outputContent.classList.remove('placeholder');
+            outputContent.textContent = '';
             
             try {
                 const response = await fetch(COHERE_API_URL, {
@@ -824,22 +1067,21 @@ Format rapi dan profesional.`
                 const data = await response.json();
                 const content = data.message?.content?.[0]?.text || 'Tidak ada respons dari AI.';
                 
-                // Display result
-                document.getElementById('output-content').textContent = content;
-                document.getElementById('output-title').textContent = `Hasil ${currentStep.toUpperCase()}`;
+                outputContent.textContent = content;
                 
-                // Mark step as completed
+                document.getElementById('output-meta').textContent = `Generated at ${new Date().toLocaleTimeString('id-ID')}`;
+                
                 markStepCompleted(currentStep);
                 
-                showNotification('Konten berhasil dihasilkan!', 'success');
+                showNotification('✅ Konten berhasil dihasilkan!', 'success');
                 
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('output-content').textContent = `❌ Error: ${error.message}\n\nPastikan API key valid dan coba lagi.`;
-                document.getElementById('output-content').classList.add('error');
+                outputContent.textContent = `❌ Error: ${error.message}\n\nPastikan API key valid dan coba lagi.`;
+                outputContent.classList.add('error');
                 
                 if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-                    showNotification('API Key tidak valid!', 'error');
+                    showNotification('❌ API Key tidak valid!', 'error');
                     setTimeout(() => showModal(), 1000);
                 }
             } finally {
@@ -851,69 +1093,40 @@ Format rapi dan profesional.`
         }
 
         function markStepCompleted(step) {
+            const steps = ['ide', 'judul', 'hook', 'naskah', 'visual', 'final'];
+            const currentIndex = steps.indexOf(step);
+            
             document.querySelectorAll('.step-btn').forEach(btn => {
-                const btnStep = btn.dataset.step;
-                const steps = ['ide', 'judul', 'hook', 'naskah', 'visual', 'final'];
-                const currentIndex = steps.indexOf(step);
-                const btnIndex = steps.indexOf(btnStep);
-                
+                const btnIndex = steps.indexOf(btn.dataset.step);
                 if (btnIndex <= currentIndex && btnIndex > 0) {
                     btn.classList.add('completed');
-                    btn.classList.remove('active');
                 }
             });
         }
 
         function copyOutput() {
             const content = document.getElementById('output-content').textContent;
-            navigator.clipboard.writeText(content).then(() => {
-                const btn = document.getElementById('copy-btn');
-                btn.textContent = '✅ Tersalin!';
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.textContent = '📋 Copy';
-                    btn.classList.remove('copied');
-                }, 2000);
-            });
+            if (content && !content.includes('Hasil akan muncul')) {
+                navigator.clipboard.writeText(content).then(() => {
+                    showNotification('📋 Tersalin ke clipboard!', 'success');
+                });
+            }
         }
 
         function showNotification(message, type = 'info') {
-            // Simple notification
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
             const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                padding: 1rem 1.5rem;
-                background: ${type === 'error' ? 'var(--error)' : type === 'success' ? 'var(--success)' : 'var(--primary)'};
-                color: ${type === 'error' || type === 'success' ? 'white' : 'var(--dark)'};
-                border-radius: 12px;
-                font-weight: 500;
-                z-index: 3000;
-                animation: slideIn 0.3s ease;
-            `;
-            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.innerHTML = message;
             document.body.appendChild(notification);
             
             setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
+                notification.style.animation = 'slideOut 0.3s ease forwards';
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
-
-        // Add animation styles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
