@@ -44,6 +44,7 @@ jobs:
         run: |
           export TZ="Asia/Jakarta"
 
+          mkdir -p /tmp/subs
           : > /tmp/subs/list.txt
           rm -f /tmp/exts.txt
 
@@ -83,13 +84,13 @@ jobs:
           # Ekstensi yang ada di repo (menentukan tech stack)
           TECH=""
           find . -type f -not -path '*/.git/*' | sed 's/.*\.//' | sort -u > /tmp/exts.txt
-          grep -qiE '^html$' /tmp/exts.txt && TECH="${TECH}HTML, "
-          grep -qiE '^css$' /tmp/exts.txt && TECH="${TECH}CSS, "
-          grep -qiE '^scss$' /tmp/exts.txt && TECH="${TECH}SCSS, "
-          grep -qiE '^js$' /tmp/exts.txt && TECH="${TECH}JavaScript, "
-          grep -qiE '^php$' /tmp/exts.txt && TECH="${TECH}PHP, "
-          grep -qiE '^py$' /tmp/exts.txt && TECH="${TECH}Python, "
-          grep -qiE '^(jsx|tsx)$' /tmp/exts.txt && TECH="${TECH}React, "
+          if grep -qiE '^html$' /tmp/exts.txt; then TECH="${TECH}HTML, "; fi
+          if grep -qiE '^css$' /tmp/exts.txt; then TECH="${TECH}CSS, "; fi
+          if grep -qiE '^scss$' /tmp/exts.txt; then TECH="${TECH}SCSS, "; fi
+          if grep -qiE '^js$' /tmp/exts.txt; then TECH="${TECH}JavaScript, "; fi
+          if grep -qiE '^php$' /tmp/exts.txt; then TECH="${TECH}PHP, "; fi
+          if grep -qiE '^py$' /tmp/exts.txt; then TECH="${TECH}Python, "; fi
+          if grep -qiE '^(jsx|tsx)$' /tmp/exts.txt; then TECH="${TECH}React, "; fi
           TECH="${TECH%, }"
           [ -z "$TECH" ] && TECH="HTML, CSS, JavaScript"
           echo "tech_stack=$TECH" >> $GITHUB_OUTPUT
