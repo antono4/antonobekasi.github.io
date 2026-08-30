@@ -1,1 +1,26 @@
-Last updated: 2026-08-31 02:38:48 WIB
+# antonobekasi.github.io
+
+
+
+## 📋 Overview
+
+This repository contains **218 files** and is built with the following technologies:
+
+HTML
+
+## 🚀 Quick Start
+
+## ✨ Features
+
+- 📝 Auto-generated documentation
+
+## 🛠️ Technologies
+
+HTML
+
+## 📄 License
+
+MIT License
+
+---
+*Last updated: 2026-08-31 02:47:45 WIB*
