@@ -1,76 +1,52 @@
-<!-- README ini dihasilkan otomatis oleh .github/workflows/generate-readme.yml -->
-<!-- Jangan edit manual: perubahan akan ditimpa pada run berikutnya. -->
+<!-- README ini dihasilkan otomatis oleh workflow .github/workflows/generate-readme.yml -->
+<!-- Jangan edit manual; perubahan akan ditim pada run berikutnya. -->
 
 <h1 align="center">Antono 👋</h1>
 
 <p align="center">
-  <em>antono</em>
+  <strong>Full Stack Web Developer and Database Analis</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/antono4/antonobekasi.github.io"><img alt="GitHub repo" src="https://img.shields.io/badge/GitHub-antono4/antonobekasi.github.io-blue?logo=github"></a>
-  <img alt="Files" src="https://img.shields.io/badge/Files-213-informational">
-  <img alt="Last commit" src="https://img.shields.io/github/last-commit/antono4/antonobekasi.github.io">
+  <a href="https://antono4.github.io/antonobekasi.github.io/"><img alt="Live Demo" src="https://img.shields.io/badge/Live%20Demo-Online-success?logo=githubpages"></a>
+  <img alt="Files" src="https://img.shields.io/badge/Files-216-informational">
+  <img alt="Updated" src="https://img.shields.io/badge/Updated-2026-09-18 07:17:26 WIB-lightgrey">
 </p>
 
 ---
 
 ## 📖 Tentang
 
-Repository **`antonobekasi.github.io`** adalah situs statis yang dibangun dengan HTML, CSS, SCSS, JavaScript, PHP.
-GitHub Pages belum diaktifkan untuk repository ini.
+Repository **`antonobekasi.github.io`** adalah situs web pribadi / portofolio yang diterbitkan melalui **GitHub Pages**. Situs utama berada di [`https://antono4.github.io/antonobekasi.github.io/`](https://antono4.github.io/antonobekasi.github.io/).
 
 ## 🗂️ Struktur Proyek
 
 ```
 antonobekasi.github.io/
-.github/
-  workflows/
-ACG/
-  index.html
-LICENSE
-PlantX/
-  LICENSE
-  README.md
-  assets/
-  index.html
-  preview.png
-VR/
-  LICENSE
-  README.md
-  Text Source.txt
-  assets/
-  index.html
-Yoga/
-  LICENSE
-  README.md
-  Text Responsive yoga website.txt
-  assets/
-  index.html
-  preview.png
-assets/
-  css/
-  img/
-  js/
-forms/
-  contact.php
-index.html
+├── index.html          # Halaman utama (landing / portofolio)
+├── assets/             # Aset statis (css, js, img, vendor)
+├── forms/               # Form handler (PHP)
+└── ACG/              # ACG v6.0 - Auto Content Generator  ->  https://antono4.github.io/antonobekasi.github.io/ACG/
+└── PlantX/              # PlantX  ->  https://antono4.github.io/antonobekasi.github.io/PlantX/
+└── VR/              # GLIDEX  ->  https://antono4.github.io/antonobekasi.github.io/VR/
+└── Yoga/              # Arch - Yoga website  ->  https://antono4.github.io/antonobekasi.github.io/Yoga/
 ```
 
 ## 🌐 Sub-Proyek / Demo
 
-Repository ini juga memuat sub-proyek (masing-masing punya `index.html` tersendiri):
+Situs ini juga memuat beberapa sub-proyek (masing-masing punya `index.html` tersendiri):
 
-| Folder | Keterangan |
-|--------|-----------|
-| [`ACG`](./ACG) | ACG v6.0 - Auto Content Generator |
-| [`PlantX`](./PlantX) | PlantX |
-| [`VR`](./VR) | GLIDEX |
-| [`Yoga`](./Yoga) | Arch - Yoga website |
+| Folder | Demo Live | Keterangan |
+|--------|-----------|-----------|
+| [`ACG`](./ACG) | [https://antono4.github.io/antonobekasi.github.io/ACG/](https://antono4.github.io/antonobekasi.github.io/ACG/) | ACG v6.0 - Auto Content Generator |
+| [`PlantX`](./PlantX) | [https://antono4.github.io/antonobekasi.github.io/PlantX/](https://antono4.github.io/antonobekasi.github.io/PlantX/) | PlantX |
+| [`VR`](./VR) | [https://antono4.github.io/antonobekasi.github.io/VR/](https://antono4.github.io/antonobekasi.github.io/VR/) | GLIDEX |
+| [`Yoga`](./Yoga) | [https://antono4.github.io/antonobekasi.github.io/Yoga/](https://antono4.github.io/antonobekasi.github.io/Yoga/) | Arch - Yoga website |
 
 ## 🛠️ Teknologi
 
-Berdasarkan ekstensi berkas yang terdeteksi di repository:
+Berdasarkan isi repository, proyek ini menggunakan:
 
 - `HTML`
 - `CSS`
@@ -78,25 +54,30 @@ Berdasarkan ekstensi berkas yang terdeteksi di repository:
 - `JavaScript`
 - `PHP`
 
-> Total **213 berkas** di repository (di luar `.git`, `node_modules`, `dist`, dan `build`).
+> Total **216 file** terdeteksi di repository.
 
 ## 🚀 Menjalankan Secara Lokal
 
-Tanpa dependency apa pun. Buka `index.html` langsung di browser, atau jalankan server statis:
+Karena ini situs statis (HTML/CSS/JS/PHP), cukup buka `index.html` di browser, atau jalankan server lokal:
 
 ```bash
+# Tanpa dependency
 python3 -m http.server 8000
 # lalu buka http://localhost:8000
+
+# atau dengan PHP (untuk form handler di forms/)
+php -S localhost:8000
 ```
 
 ## 📬 Kontak
 
 - GitHub: [antono4](https://github.com/antono4)
+- Situs: [https://antono4.github.io/antonobekasi.github.io/](https://antono4.github.io/antonobekasi.github.io/)
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah MIT License — lihat berkas [`LICENSE`](./LICENSE).
+Lihat berkas [`LICENSE`](./LICENSE) untuk informasi lisensi.
 
 ---
 
-<sub>README ini di-generate otomatis oleh GitHub Actions `.github/workflows/generate-readme.yml`.</sub>
+<sub>README ini di-generate otomatis pada **2026-09-18 07:17:26 WIB** oleh GitHub Actions `.github/workflows/generate-readme.yml`.</sub>
